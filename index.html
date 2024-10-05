@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>for a good time</title>
+</head>
+<style lang="css">
+    html, body {
+        height: 100vh;
+    }
+</style>
+<script>
+
+    let bpm = 100;
+    let doubletime = false;
+</script>
+<body>
+<button id="startstop">startstop</button>
+<input type="range" id="bpm" min="0" max="200" value="1" step="1" />
+<span id="bpmout"></span>
+<input type="checkbox" id="doubletime" />
+</body>
+<script>
+    const body = document.body;
+    let i;
+
+    let startstop = document.getElementById('startstop');
+
+    // function restart()
+
+    startstop.addEventListener('click', () => {
+        let timeout = (60 / bpm) * 1000
+        timeout = doubletime ? timeout / 2 : timeout;
+        if (i) {
+            clearInterval(i);
+            i = null;
+        } else {
+            i = setInterval(() => {
+                body.style.backgroundColor = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+            }, timeout);
+        }
+    });
+
+    document.getElementById('bpmout').innerHTML = bpm;
+
+    const bpmSlider = document.getElementById('bpm');
+    bpmSlider.value = bpm;
+    bpmSlider.addEventListener('input', () => {
+        bpm = bpmSlider.value;
+        document.getElementById('bpmout').innerHTML = bpm;
+    });
+
+    document.getElementById('doubletime').addEventListener('input', () => {
+        doubletime = !doubletime;
+    });
+
+</script>
+</html>
