@@ -16,29 +16,51 @@
 </script>
 <body>
 <button id="startstop">startstop</button>
-<input type="range" id="bpm" min="0" max="200" value="1" step="1" />
-<span id="bpmout"></span>
+<button id="reset">reset</button>
+<button id="pulse">pulse</button>
 <input type="checkbox" id="doubletime" />
+<span id="bpmout"></span>
+<br />
+    <input style="width: 100%" type="range" id="bpm" min="0" max="300" value="1" step="1" />
 </body>
 <script>
     const body = document.body;
     let i;
 
     let startstop = document.getElementById('startstop');
+    let reset = document.getElementById('reset');
 
-    // function restart()
+    function stop () {
+        clearInterval(i);
+        i = null;
+    }
+
+    let timeout
+
+    function start () {
+        function change () {
+            body.style.backgroundColor = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+        }
+        change();
+        i = setInterval(change, timeout);
+    }
+
+    function restart() {
+        stop();
+        start();
+    }
 
     startstop.addEventListener('click', () => {
-        let timeout = (60 / bpm) * 1000
-        timeout = doubletime ? timeout / 2 : timeout;
         if (i) {
-            clearInterval(i);
-            i = null;
+            stop();
         } else {
-            i = setInterval(() => {
-                body.style.backgroundColor = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
-            }, timeout);
+            start()
         }
+    });
+
+
+    reset.addEventListener('click', () => {
+        restart();
     });
 
     document.getElementById('bpmout').innerHTML = bpm;
@@ -46,13 +68,30 @@
     const bpmSlider = document.getElementById('bpm');
     bpmSlider.value = bpm;
     bpmSlider.addEventListener('input', () => {
-        bpm = bpmSlider.value;
-        document.getElementById('bpmout').innerHTML = bpm;
+        timeout = (60 / bpmSlider.value) * 1000;
+        document.getElementById('bpmout').innerHTML = bpmSlider.value;
+        restart();
     });
 
     document.getElementById('doubletime').addEventListener('input', () => {
         doubletime = !doubletime;
+        restart();
     });
+
+    let firstPulse;
+
+    document.getElementById('pulse').addEventListener('mousedown', () => {
+        // first pulse tapped
+        if (!firstPulse) {
+            firstPulse = performance.now()
+            return
+        }
+
+        // second pulse
+        timeout = performance.now() - firstPulse;
+        firstPulse = null;
+        restart();
+    })
 
 </script>
 </html>
